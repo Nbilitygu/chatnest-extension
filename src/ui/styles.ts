@@ -259,40 +259,6 @@ export function injectStyles(): void {
       flex: 1;
     }
 
-    /* ===== Back to Top ===== */
-    #chatnest-back-to-top {
-      padding: 10px 16px;
-      border-top: 1px solid var(--chatnest-border);
-      text-align: center;
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--chatnest-text-secondary);
-      cursor: pointer;
-      transition: all 0.15s ease;
-      flex-shrink: 0;
-      background: none;
-      border-left: none;
-      border-right: none;
-      border-bottom: none;
-      width: 100%;
-      font-family: inherit;
-    }
-
-    #chatnest-back-to-top:hover {
-      background: var(--chatnest-item-hover-bg);
-      color: var(--chatnest-active);
-    }
-
-    .chatnest-dark #chatnest-back-to-top {
-      border-top-color: var(--chatnest-border-dark);
-      color: var(--chatnest-text-secondary-dark);
-    }
-
-    .chatnest-dark #chatnest-back-to-top:hover {
-      background: var(--chatnest-item-hover-bg-dark);
-      color: var(--chatnest-active-dark);
-    }
-
     /* ===== FAB (Floating Action Button) ===== */
     #chatnest-fab {
       position: fixed;
@@ -404,39 +370,6 @@ export function injectStyles(): void {
     .chatnest-fp-list::-webkit-scrollbar-thumb {
       background: var(--chatnest-marker);
       border-radius: 4px;
-    }
-
-    .chatnest-fp-backtop {
-      padding: 10px 16px;
-      border-top: 1px solid var(--chatnest-border);
-      text-align: center;
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--chatnest-text-secondary);
-      cursor: pointer;
-      transition: all 0.15s ease;
-      flex-shrink: 0;
-      background: none;
-      border-left: none;
-      border-right: none;
-      border-bottom: none;
-      width: 100%;
-      font-family: inherit;
-    }
-
-    .chatnest-fp-backtop:hover {
-      background: var(--chatnest-item-hover-bg);
-      color: var(--chatnest-active);
-    }
-
-    .chatnest-dark .chatnest-fp-backtop {
-      border-top-color: var(--chatnest-border-dark);
-      color: var(--chatnest-text-secondary-dark);
-    }
-
-    .chatnest-dark .chatnest-fp-backtop:hover {
-      background: var(--chatnest-item-hover-bg-dark);
-      color: var(--chatnest-active-dark);
     }
 
     /* ===== Tooltip ===== */

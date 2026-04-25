@@ -225,15 +225,6 @@ function createPanel(): void {
   listEl.id = LIST_ID;
   panelEl.appendChild(listEl);
 
-  const backToTop = document.createElement('button');
-  backToTop.id = 'chatnest-back-to-top';
-  backToTop.textContent = '↓ 返回最近提问';
-  backToTop.addEventListener('mousedown', () => {
-    debug('back to top clicked');
-    scrollToTop();
-  });
-  panelEl.appendChild(backToTop);
-
   panelEl.addEventListener('mouseenter', () => {
     if (collapseTimer) clearTimeout(collapseTimer);
   });
@@ -342,14 +333,6 @@ function createFloatingPanel(): void {
   floatingListEl.className = 'chatnest-fp-list';
   floatingPanelEl.appendChild(floatingListEl);
 
-  const backToTop = document.createElement('button');
-  backToTop.className = 'chatnest-fp-backtop';
-  backToTop.textContent = '↓ 返回最近提问';
-  backToTop.addEventListener('mousedown', () => {
-    scrollToTop();
-  });
-  floatingPanelEl.appendChild(backToTop);
-
   floatingPanelEl.addEventListener('mouseenter', () => {
     if (collapseTimer) clearTimeout(collapseTimer);
   });
@@ -359,15 +342,6 @@ function createFloatingPanel(): void {
   });
 
   document.body.appendChild(floatingPanelEl);
-}
-
-function scrollToTop(): void {
-  const ctx = findScrollContext();
-  if (ctx.container === document.documentElement || ctx.container === document.body) {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  } else {
-    (ctx.container as HTMLElement).scrollTo({ top: 0, behavior: 'smooth' });
-  }
 }
 
 function toggleFloatingPanel(): void {
