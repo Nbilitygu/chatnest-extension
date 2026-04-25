@@ -22,6 +22,7 @@ export const geminiAdapter: PlatformAdapter = {
       '[data-test-id="query-text"]',
       'div[class*="user-message"]',
       'div[class*="userMessage"]',
+      'span[class*="user-query-bubble"]',
       'div[class*="user-query"]',
       'div[class*="userQuery"]',
       '[aria-label="You"]',
