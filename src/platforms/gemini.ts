@@ -54,8 +54,11 @@ export const geminiAdapter: PlatformAdapter = {
   },
 
   extractMessageText(el: Element): string {
-    const textEl = el.querySelector('p, [class*="text"], div');
-    return getTextContent(textEl || el);
+    // 排除屏幕阅读器辅助文本（如 "You said"）
+    const clone = el.cloneNode(true) as Element;
+    clone.querySelectorAll('.cdk-visually-hidden, .screen-reader-only, [aria-hidden="true"]').forEach(n => n.remove());
+    const textEl = clone.querySelector('p, [class*="text"], div');
+    return getTextContent(textEl || clone);
   },
 
   getMessageId(el: Element): string {
