@@ -1,0 +1,55 @@
+{
+  "manifest_version": 3,
+  "name": "ChatNest - AI 对话导航",
+  "version": "1.0.0",
+  "description": "为 AI 对话平台提供极简侧边导航，快速定位任意提问",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://chatgpt.com/*",
+    "https://chat.openai.com/*",
+    "https://claude.ai/*",
+    "https://gemini.google.com/*",
+    "https://chat.deepseek.com/*",
+    "https://kimi.com/*",
+    "https://kimi.moonshot.cn/*",
+    "https://www.perplexity.ai/*",
+    "https://doubao.com/*",
+    "https://www.doubao.com/*",
+    "https://qianwen.com/*",
+    "https://yuanbao.tencent.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*",
+        "https://claude.ai/*",
+        "https://gemini.google.com/*",
+        "https://chat.deepseek.com/*",
+        "https://kimi.com/*",
+        "https://kimi.moonshot.cn/*",
+        "https://www.perplexity.ai/*",
+        "https://doubao.com/*",
+        "https://www.doubao.com/*",
+        "https://qianwen.com/*",
+        "https://yuanbao.tencent.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "ChatNest",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    },
+    "default_popup": "popup.html"
+  }
+}
