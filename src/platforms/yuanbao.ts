@@ -15,6 +15,7 @@ export const yuanbaoAdapter: PlatformAdapter = {
 
   getUserMessages(): UserMessage[] {
     const selectors = [
+      '[class*="agent-chat__bubble__content-wrapper"]',
       '[data-testid="user-message"]',
       '[class*="user-message"]',
       '[class*="userMessage"]',

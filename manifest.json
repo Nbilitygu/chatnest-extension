@@ -1,21 +1,18 @@
 {
   "manifest_version": 3,
   "name": "ChatNest - AI 对话导航",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "为 AI 对话平台提供极简侧边导航，快速定位任意提问",
   "permissions": ["storage"],
   "host_permissions": [
     "https://chatgpt.com/*",
     "https://chat.openai.com/*",
-    "https://claude.ai/*",
     "https://gemini.google.com/*",
     "https://kimi.com/*",
     "https://www.kimi.com/*",
     "https://kimi.moonshot.cn/*",
-    "https://www.perplexity.ai/*",
     "https://doubao.com/*",
     "https://www.doubao.com/*",
-    "https://qianwen.com/*",
     "https://yuanbao.tencent.com/*"
   ],
   "content_scripts": [
@@ -23,15 +20,12 @@
       "matches": [
         "https://chatgpt.com/*",
         "https://chat.openai.com/*",
-        "https://claude.ai/*",
         "https://gemini.google.com/*",
         "https://kimi.com/*",
         "https://www.kimi.com/*",
         "https://kimi.moonshot.cn/*",
-        "https://www.perplexity.ai/*",
         "https://doubao.com/*",
         "https://www.doubao.com/*",
-        "https://qianwen.com/*",
         "https://yuanbao.tencent.com/*"
       ],
       "js": ["content.js"],

@@ -1,6 +1,6 @@
 {
   "name": "chatnest-extension",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "为 AI 对话平台提供极简侧边导航",
   "type": "module",
   "scripts": {
