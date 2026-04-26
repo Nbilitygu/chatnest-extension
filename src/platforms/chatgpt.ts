@@ -25,10 +25,13 @@ export const chatgptAdapter: PlatformAdapter = {
       const text = this.extractMessageText(userEl);
       if (!text) return;
 
+      // 使用文本内容元素作为滚动目标，避免外层容器布局偏差
+      const textEl = userEl.querySelector('.whitespace-pre-wrap, .text-base, .markdown');
+
       messages.push({
         id: this.getMessageId(userEl),
         text,
-        element: userEl,
+        element: (textEl || userEl) as Element,
         index,
       });
     });
@@ -39,10 +42,11 @@ export const chatgptAdapter: PlatformAdapter = {
       userEls.forEach((el, index) => {
         const text = this.extractMessageText(el);
         if (!text) return;
+        const textEl = el.querySelector('.whitespace-pre-wrap, .text-base, .markdown');
         messages.push({
           id: this.getMessageId(el),
           text,
-          element: el,
+          element: (textEl || el) as Element,
           index,
         });
       });

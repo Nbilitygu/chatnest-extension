@@ -41,60 +41,52 @@ export function scrollToElement(element: Element): void {
     element.className?.slice(0, 40),
   );
 
-  // 查找最近的滚动容器
-  const container = findScrollContainer(element);
+  // 首选方案：浏览器原生的 scrollIntoView 能自动处理 column-reverse、padding 等复杂布局
+  element.scrollIntoView({ behavior: 'instant', block: 'start' });
 
-  if (container) {
-    const containerEl = container as HTMLElement;
+  setTimeout(() => {
+    const afterRectTop = element.getBoundingClientRect().top;
+    console.log('[ChatNest:scroll] element rect after scrollIntoView=', afterRectTop);
 
-    // 豆包等平台使用负 scrollTop + CSS transform 做虚拟滚动，
-    // 标准 scrollTop 计算会失效，直接 fallback 到 scrollIntoView
-    if (containerEl.scrollTop < 0) {
-      console.log('[ChatNest:scroll] negative scrollTop detected, using scrollIntoView');
-      element.scrollIntoView({ behavior: 'instant', block: 'start' });
-      return;
-    }
+    // 如果 scrollIntoView 后元素仍不在视口顶部附近，尝试手动滚动容器
+    const inViewport = afterRectTop > -50 && afterRectTop < 200;
+    if (!inViewport) {
+      console.log('[ChatNest:scroll] scrollIntoView did not bring element to top, trying container scroll');
 
-    const containerRect = container.getBoundingClientRect();
-    const targetScrollTop = containerEl.scrollTop + (rect.top - containerRect.top) - 20;
-    const maxScroll = container.scrollHeight - container.clientHeight;
-    const clamped = Math.max(0, Math.min(targetScrollTop, maxScroll));
+      const container = findScrollContainer(element);
+      if (container) {
+        const containerEl = container as HTMLElement;
+        const containerRect = container.getBoundingClientRect();
+        const targetScrollTop = containerEl.scrollTop + (afterRectTop - containerRect.top) - 20;
+        const maxScroll = container.scrollHeight - container.clientHeight;
+        const clamped = Math.max(0, Math.min(targetScrollTop, maxScroll));
 
-    console.log(
-      '[ChatNest:scroll] container',
-      container.tagName,
-      container.className?.slice(0, 30),
-      'scrollTop before=',
-      containerEl.scrollTop,
-      'target=',
-      clamped,
-      'max=',
-      maxScroll,
-    );
+        console.log(
+          '[ChatNest:scroll] container',
+          container.tagName,
+          container.className?.slice(0, 30),
+          'scrollTop before=',
+          containerEl.scrollTop,
+          'target=',
+          clamped,
+          'max=',
+          maxScroll,
+        );
 
-    // 某些网站（如 kimi）的自定义滚动库会拦截 smooth 滚动，先尝试 instant
-    const beforeRectTop = rect.top;
-    container.scrollTo({ top: clamped, behavior: 'instant' });
+        container.scrollTo({ top: clamped, behavior: 'instant' });
 
-    setTimeout(() => {
-      const afterScrollTop = containerEl.scrollTop;
-      const afterRectTop = element.getBoundingClientRect().top;
-      console.log('[ChatNest:scroll] container scrollTop after=', afterScrollTop);
-      console.log('[ChatNest:scroll] element rect after=', afterRectTop);
-
-      // Doubao 等平台使用 CSS transform 做虚拟滚动，scrollTo 不生效
-      const moved = Math.abs(afterRectTop - beforeRectTop) > 5;
-      const inView = afterRectTop > -100 && afterRectTop < window.innerHeight + 100;
-      if (!moved && !inView) {
-        console.log('[ChatNest:scroll] scrollTo did not work, falling back to scrollIntoView');
-        element.scrollIntoView({ behavior: 'instant', block: 'start' });
+        setTimeout(() => {
+          const finalRectTop = element.getBoundingClientRect().top;
+          console.log('[ChatNest:scroll] container scrollTop after=', containerEl.scrollTop);
+          console.log('[ChatNest:scroll] element rect after container scroll=', finalRectTop);
+        }, 50);
+      } else {
+        console.log('[ChatNest:scroll] no scroll container, fallback to window.scrollTo');
+        const targetScrollY = window.scrollY + afterRectTop - 20;
+        window.scrollTo({ top: targetScrollY, behavior: 'instant' });
       }
-    }, 50);
-  } else {
-    console.log('[ChatNest:scroll] no scroll container, fallback to window.scrollTo');
-    const targetScrollY = window.scrollY + rect.top - 20;
-    window.scrollTo({ top: targetScrollY, behavior: 'instant' });
-  }
+    }
+  }, 50);
 }
 
 export function getElementScrollPercent(element: Element): number {

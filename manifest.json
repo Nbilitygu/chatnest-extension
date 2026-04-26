@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ChatNest - AI 对话导航",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "为 AI 对话平台提供极简侧边导航，快速定位任意提问",
   "permissions": ["storage"],
   "host_permissions": [

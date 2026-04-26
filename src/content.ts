@@ -5,6 +5,7 @@ import { debounce } from './utils/throttle';
 
 let initialized = false;
 let cleanupFns: Array<() => void> = [];
+let startPromise: Promise<void> | null = null;
 
 async function start(): Promise<void> {
   console.log('[ChatNest] init started, hostname:', location.hostname);
@@ -120,13 +121,33 @@ function stop(): void {
   initialized = false;
 }
 
+function handleEnabledChange(enabled: boolean): void {
+  console.log('[ChatNest] enabled changed to', enabled);
+  if (enabled && !initialized) {
+    if (startPromise) {
+      console.log('[ChatNest] start already in progress, skipping');
+      return;
+    }
+    startPromise = start().finally(() => {
+      startPromise = null;
+    });
+  } else if (!enabled && initialized) {
+    stop();
+  }
+}
+
 chrome.runtime.onMessage.addListener((message) => {
   if (message.type === 'CHATNEST_ENABLED_CHANGED') {
-    console.log('[ChatNest] enabled changed to', message.enabled);
-    if (message.enabled && !initialized) {
-      start();
-    } else if (!message.enabled && initialized) {
-      stop();
+    handleEnabledChange(message.enabled);
+  }
+});
+
+// 备用机制：监听 storage 变化，确保即使消息发送失败也能响应开关状态
+chrome.storage.onChanged.addListener((changes) => {
+  if (changes.chatnest_state_v1) {
+    const newEnabled = changes.chatnest_state_v1.newValue?.enabled;
+    if (typeof newEnabled === 'boolean') {
+      handleEnabledChange(newEnabled);
     }
   }
 });

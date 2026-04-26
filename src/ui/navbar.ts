@@ -46,6 +46,7 @@ export function destroyNavbar(): void {
     messages: [],
     activeId: null,
   };
+  lastMessagesHash = '';
 }
 
 export function initNavbar(): void {
