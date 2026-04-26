@@ -22,11 +22,7 @@ export interface PlatformAdapter {
   observeChanges(callback: () => void): MutationObserver;
 }
 
-export type DisplayMode = 'sidebar' | 'floating';
-
 export interface ChatNestState {
   visible: boolean;
-  expanded: boolean;
-  mode: DisplayMode;
   enabled: boolean;
 }

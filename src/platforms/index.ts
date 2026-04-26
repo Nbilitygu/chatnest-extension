@@ -2,7 +2,6 @@ import type { PlatformAdapter } from '../types';
 import { chatgptAdapter } from './chatgpt';
 import { claudeAdapter } from './claude';
 import { geminiAdapter } from './gemini';
-import { deepseekAdapter } from './deepseek';
 import { kimiAdapter } from './kimi';
 import { perplexityAdapter } from './perplexity';
 import { doubaoAdapter } from './doubao';
@@ -13,7 +12,6 @@ const adapters: PlatformAdapter[] = [
   chatgptAdapter,
   claudeAdapter,
   geminiAdapter,
-  deepseekAdapter,
   kimiAdapter,
   perplexityAdapter,
   doubaoAdapter,

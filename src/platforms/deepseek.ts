@@ -14,34 +14,21 @@ export const deepseekAdapter: PlatformAdapter = {
   },
 
   getUserMessages(): UserMessage[] {
-    const selectors = [
-      '[data-testid="user-message"]',
-      '[class*="user-message"]',
-      '[class*="userMessage"]',
-      '[class*="human-message"]',
-      '[class*="humanMessage"]',
-      '[role="user"]',
-    ];
-
     const messages: UserMessage[] = [];
-    let index = 0;
+    const els = document.querySelectorAll('div[class*="ds-message"]');
 
-    for (const selector of selectors) {
-      const els = document.querySelectorAll(selector);
-      if (els.length > 0) {
-        els.forEach(el => {
-          const text = this.extractMessageText(el);
-          if (!text) return;
-          messages.push({
-            id: this.getMessageId(el),
-            text,
-            element: el,
-            index: index++,
-          });
-        });
-        if (messages.length > 0) break;
-      }
-    }
+    els.forEach((el) => {
+      const text = this.extractMessageText(el);
+      if (!text) return;
+      // DeepSeek 中 AI 回复文本以 "已思考" 开头，排除
+      if (text.startsWith('已思考') || text.startsWith('已深度思考')) return;
+      messages.push({
+        id: this.getMessageId(el),
+        text,
+        element: el,
+        index: messages.length,
+      });
+    });
 
     return messages;
   },

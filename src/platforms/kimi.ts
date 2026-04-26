@@ -7,7 +7,7 @@ export const kimiAdapter: PlatformAdapter = {
 
   isMatch(): boolean {
     const host = location.hostname;
-    return host === 'kimi.com' || host === 'kimi.moonshot.cn';
+    return host === 'kimi.com' || host === 'www.kimi.com' || host === 'kimi.moonshot.cn';
   },
 
   getConversationContainer(): Element | null {
@@ -16,6 +16,8 @@ export const kimiAdapter: PlatformAdapter = {
 
   getUserMessages(): UserMessage[] {
     const selectors = [
+      '[class*="chat-content-item-user"]',
+      '[class*="segment-user"]',
       '[data-testid="user-message"]',
       '[class*="user-message"]',
       '[class*="userMessage"]',

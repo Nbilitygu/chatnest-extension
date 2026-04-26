@@ -32,92 +32,65 @@ export function injectStyles(): void {
       --chatnest-item-hover-bg-dark: rgba(167, 139, 250, 0.08);
     }
 
-    /* ===== Sidebar Bar ===== */
-    #chatnest-bar {
+    /* ===== Sidebar Wrapper (DeepSeek style fade-in/out) ===== */
+    #chatnest-sidebar-wrapper {
       position: fixed;
-      right: 0;
-      top: 0;
-      bottom: 0;
-      width: 10px;
-      z-index: 9998;
-      pointer-events: auto;
-      cursor: pointer;
-      transition: background 0.25s ease;
-      background: transparent;
-    }
-
-    #chatnest-bar:hover {
-      background: rgba(128, 128, 128, 0.06);
-    }
-
-    .chatnest-dark #chatnest-bar:hover {
-      background: rgba(255, 255, 255, 0.04);
-    }
-
-    /* ===== Markers ===== */
-    .chatnest-marker {
-      position: absolute;
-      right: 1px;
-      width: 8px;
-      border-radius: 4px;
-      background: var(--chatnest-marker);
-      opacity: 0.6;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      cursor: pointer;
+      right: 20px;
+      top: 50%;
       transform: translateY(-50%);
+      width: 240px;
+      height: 340px;
+      z-index: 9998;
+      overflow: hidden;
+      border-radius: 12px;
+      background: transparent;
+      border: 1px solid transparent;
+      box-shadow: none;
+      box-sizing: border-box;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      pointer-events: none;
+      transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, backdrop-filter 0.25s ease;
     }
 
-    .chatnest-marker:hover {
-      opacity: 1;
-      width: 10px;
-      background: var(--chatnest-text-secondary);
-    }
-
-    .chatnest-marker.active {
-      background: var(--chatnest-marker-active);
-      opacity: 1;
-      width: 10px;
-      box-shadow: 0 0 8px var(--chatnest-marker-active-glow), 0 0 16px var(--chatnest-active-glow);
-    }
-
-    .chatnest-dark .chatnest-marker.active {
-      box-shadow: 0 0 8px var(--chatnest-marker-active-glow), 0 0 16px rgba(167, 139, 250, 0.3);
-    }
-
-    /* ===== Sidebar Panel ===== */
-    #chatnest-panel {
-      position: fixed;
-      right: 10px;
-      top: 12px;
-      bottom: 12px;
-      width: 200px;
-      z-index: 9999;
+    #chatnest-sidebar-wrapper.expanded {
+      pointer-events: auto;
       background: var(--chatnest-bg);
+      border-color: var(--chatnest-border);
+      box-shadow: var(--chatnest-shadow);
       backdrop-filter: blur(16px) saturate(1.4);
       -webkit-backdrop-filter: blur(16px) saturate(1.4);
-      border: 1px solid var(--chatnest-border);
-      border-right: none;
-      box-shadow: var(--chatnest-shadow);
-      border-radius: 12px 0 0 12px;
-      display: flex;
-      flex-direction: column;
-      transform: translateX(calc(100% + 20px));
-      transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.25s ease;
-      opacity: 0;
-      pointer-events: none;
-      overflow: hidden;
     }
 
-    #chatnest-panel.visible {
-      transform: translateX(0);
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .chatnest-dark #chatnest-panel {
+    .chatnest-dark #chatnest-sidebar-wrapper.expanded {
       background: var(--chatnest-bg-dark);
       border-color: var(--chatnest-border-dark);
       box-shadow: var(--chatnest-shadow-dark);
+      backdrop-filter: blur(16px) saturate(1.4);
+      -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    }
+
+    /* ===== Sidebar Panel (inner layout container) ===== */
+    #chatnest-panel {
+      position: relative;
+      width: 240px;
+      height: 100%;
+    }
+
+    /* ===== Panel Content ===== */
+    #chatnest-panel-content {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 212px;
+      display: flex;
+      flex-direction: column;
+      pointer-events: none;
+    }
+
+    #chatnest-sidebar-wrapper.expanded #chatnest-panel-content {
+      pointer-events: auto;
     }
 
     #chatnest-panel-header {
@@ -129,6 +102,12 @@ export function injectStyles(): void {
       color: var(--chatnest-text-secondary);
       flex-shrink: 0;
       user-select: none;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    #chatnest-sidebar-wrapper.expanded #chatnest-panel-header {
+      opacity: 1;
     }
 
     .chatnest-dark #chatnest-panel-header {
@@ -164,24 +143,27 @@ export function injectStyles(): void {
     .chatnest-item {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 7px 14px;
+      justify-content: space-between;
+      padding: 0 10px 0 14px;
       font-size: 12px;
-      line-height: 1.4;
+      height: 32px;
       color: var(--chatnest-text);
       cursor: pointer;
       transition: all 0.15s ease;
       position: relative;
       white-space: nowrap;
       overflow: hidden;
-      text-overflow: ellipsis;
       border: none;
       background: none;
       width: 100%;
       text-align: left;
       font-family: inherit;
-      border-radius: 0 6px 6px 0;
-      margin-right: 6px;
+      border-radius: 6px 0 0 6px;
+      pointer-events: none;
+    }
+
+    #chatnest-sidebar-wrapper.expanded .chatnest-item {
+      pointer-events: auto;
     }
 
     .chatnest-item:hover {
@@ -225,31 +207,13 @@ export function injectStyles(): void {
       background: var(--chatnest-active-dark);
     }
 
-    .chatnest-dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--chatnest-marker);
-      flex-shrink: 0;
-      transition: background 0.2s;
+    /* 默认状态（sidebar 未 hover）：隐藏所有列表项背景和 active 竖线 */
+    #chatnest-sidebar-wrapper:not(.expanded) .chatnest-item {
+      background: none;
     }
 
-    .chatnest-item.active .chatnest-dot {
-      background: var(--chatnest-marker-active);
-      box-shadow: 0 0 4px var(--chatnest-active-glow);
-    }
-
-    .chatnest-num {
-      font-size: 10px;
-      font-weight: 500;
-      color: var(--chatnest-text-secondary);
-      min-width: 16px;
-      text-align: center;
-      flex-shrink: 0;
-    }
-
-    .chatnest-item.active .chatnest-num {
-      color: var(--chatnest-active);
+    #chatnest-sidebar-wrapper:not(.expanded) .chatnest-item.active::before {
+      display: none;
     }
 
     .chatnest-item-text {
@@ -257,119 +221,47 @@ export function injectStyles(): void {
       text-overflow: ellipsis;
       white-space: nowrap;
       flex: 1;
-    }
-
-    /* ===== FAB (Floating Action Button) ===== */
-    #chatnest-fab {
-      position: fixed;
-      right: 0px;
-      width: 40px;
-      height: 52px;
-      border-radius: 10px 0 0 10px;
-      background: var(--chatnest-fab-bg);
-      color: white;
-      border: none;
-      cursor: pointer;
-      z-index: 9998;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 16px rgba(124, 58, 237, 0.35), 0 2px 6px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      font-family: inherit;
-      padding: 0;
-    }
-
-    #chatnest-fab:hover {
-      background: var(--chatnest-fab-bg-hover);
-      box-shadow: 0 6px 24px rgba(124, 58, 237, 0.45), 0 3px 8px rgba(0, 0, 0, 0.12);
-    }
-
-    #chatnest-fab:active {
-      transform: scale(0.97);
-    }
-
-    #chatnest-fab.chatnest-fab-snapped {
-      opacity: 0.45;
-      background: #94a3b8;
-      width: 28px;
-    }
-
-    #chatnest-fab.chatnest-fab-snapped:hover {
-      opacity: 0.8;
-      background: #64748b;
-      width: 36px;
-    }
-
-    /* ===== Floating Panel ===== */
-    #chatnest-floating-panel {
-      position: fixed;
-      bottom: 88px;
-      right: 28px;
-      width: 260px;
-      max-height: 420px;
-      z-index: 9999;
-      background: var(--chatnest-bg);
-      backdrop-filter: blur(16px) saturate(1.4);
-      -webkit-backdrop-filter: blur(16px) saturate(1.4);
-      border: 1px solid var(--chatnest-border);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06);
-      border-radius: 14px;
-      display: none;
-      flex-direction: column;
-      transform: translateY(12px) scale(0.96);
-      transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.25s ease;
       opacity: 0;
-      pointer-events: none;
-      overflow: hidden;
+      transition: opacity 0.2s ease;
     }
 
-    #chatnest-floating-panel.visible {
-      transform: translateY(0) scale(1);
+    #chatnest-sidebar-wrapper.expanded .chatnest-item-text {
       opacity: 1;
-      pointer-events: auto;
     }
 
-    .chatnest-dark #chatnest-floating-panel {
-      background: var(--chatnest-bg-dark);
-      border-color: var(--chatnest-border-dark);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.15);
-    }
-
-    .chatnest-fp-header {
-      padding: 14px 16px 10px;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--chatnest-text-secondary);
+    .chatnest-item-marker {
+      width: 28px;
+      height: 32px;
       flex-shrink: 0;
-      user-select: none;
-    }
-
-    .chatnest-dark .chatnest-fp-header {
-      color: var(--chatnest-text-secondary-dark);
-    }
-
-    .chatnest-fp-list {
-      flex: 1;
-      overflow-y: auto;
-      padding: 4px 0;
-      scrollbar-width: thin;
-      scrollbar-color: var(--chatnest-marker) transparent;
-    }
-
-    .chatnest-fp-list::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    .chatnest-fp-list::-webkit-scrollbar-track {
+      margin-left: 0;
+      position: relative;
+      pointer-events: auto;
+      cursor: pointer;
       background: transparent;
     }
 
-    .chatnest-fp-list::-webkit-scrollbar-thumb {
+    .chatnest-item-marker::after {
+      content: '';
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 12px;
+      height: 2px;
+      border-radius: 1px;
       background: var(--chatnest-marker);
-      border-radius: 4px;
+      opacity: 0.7;
+      transition: opacity 0.2s ease, background 0.2s ease;
+    }
+
+    #chatnest-sidebar-wrapper.expanded .chatnest-item-marker::after {
+      opacity: 1;
+    }
+
+    .chatnest-item.active .chatnest-item-marker::after {
+      background: var(--chatnest-marker-active);
+      box-shadow: 0 0 4px var(--chatnest-active-glow);
+      opacity: 1;
     }
 
     /* ===== Tooltip ===== */
@@ -397,21 +289,6 @@ export function injectStyles(): void {
       opacity: 1;
     }
 
-    /* ===== Animation keyframes for markers ===== */
-    @keyframes chatnest-marker-in {
-      from {
-        opacity: 0;
-        transform: translateY(-50%) scale(0.5);
-      }
-      to {
-        opacity: 0.55;
-        transform: translateY(-50%) scale(1);
-      }
-    }
-
-    .chatnest-marker {
-      animation: chatnest-marker-in 0.3s ease-out;
-    }
   `;
 
   document.head.appendChild(style);

@@ -1,5 +1,5 @@
 import { detectPlatform } from './platforms';
-import { initNavbar, destroyNavbar, setMessages, setVisible, isVisible, setMode } from './ui/navbar';
+import { initNavbar, destroyNavbar, setMessages, setVisible, isVisible } from './ui/navbar';
 import { getState, setState } from './utils/storage';
 import { debounce } from './utils/throttle';
 
@@ -22,7 +22,7 @@ async function start(): Promise<void> {
   try {
     state = await getState();
   } catch {
-    state = { visible: true, expanded: false, mode: 'sidebar' as const, enabled: true };
+    state = { visible: true, enabled: true };
   }
 
   if (state.enabled === false) {
@@ -33,7 +33,6 @@ async function start(): Promise<void> {
   initialized = true;
   initNavbar();
   setVisible(state.visible);
-  setMode(state.mode || 'sidebar');
 
   function updateMessages(): void {
     const messages = currentAdapter.getUserMessages();
@@ -122,12 +121,6 @@ function stop(): void {
 }
 
 chrome.runtime.onMessage.addListener((message) => {
-  if (message.type === 'CHATNEST_MODE_CHANGED' && message.mode) {
-    console.log('[ChatNest] mode changed to', message.mode);
-    if (initialized) {
-      setMode(message.mode);
-    }
-  }
   if (message.type === 'CHATNEST_ENABLED_CHANGED') {
     console.log('[ChatNest] enabled changed to', message.enabled);
     if (message.enabled && !initialized) {
