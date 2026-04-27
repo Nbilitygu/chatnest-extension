@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ChatNest — AI 对话导航侧边栏</title>
+<meta name="description" content="为 AI 对话平台提供极简侧边导航，快速定位任意提问。支持 ChatGPT、Kimi、豆包、腾讯元宝等平台。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='38' stroke='%231a1a1a' stroke-width='3' fill='none'/%3E%3Cpath d='M28 44Q50 30 72 44' stroke='%231a1a1a' stroke-width='3.5' fill='none' stroke-linecap='round'/%3E%3Cpath d='M24 54Q50 38 76 54' stroke='%231a1a1a' stroke-width='3.5' fill='none' stroke-linecap='round'/%3E%3Cpath d='M30 64Q50 52 70 64' stroke='%231a1a1a' stroke-width='3.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+:root { color-scheme: light; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  color: #1a1a1a;
+  background: #fff;
+}
+
+/* Hero */
+.hero {
+  text-align: center;
+  padding: 100px 24px 60px;
+  background: #fafafa;
+}
+
+.hero-icon {
+  margin-bottom: 16px;
+  color: #1a1a1a;
+}
+.hero-icon svg {
+  display: block;
+  margin: 0 auto;
+}
+
+.hero h1 {
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  margin-bottom: 12px;
+}
+
+.hero .tagline {
+  font-size: 19px;
+  color: #666;
+  max-width: 520px;
+  margin: 0 auto 36px;
+}
+
+.cta {
+  display: inline-flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.cta a {
+  display: inline-block;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.cta-primary {
+  background: #1a1a1a;
+  color: #fff;
+}
+.cta-primary:hover { background: #333; }
+
+.cta-secondary {
+  background: none;
+  color: #1a1a1a;
+  border: 1px solid #ddd;
+}
+.cta-secondary:hover { background: #f5f5f5; }
+
+/* Demo */
+.demo {
+  text-align: center;
+  padding: 40px 24px 60px;
+  background: #fafafa;
+}
+
+.demo-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+  background: #fff;
+  height: 440px;
+  display: flex;
+}
+
+/* Left chat area — faded background */
+.demo-chat {
+  flex: 1;
+  padding: 32px 40px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  opacity: 0.35;
+  filter: grayscale(0.6);
+  pointer-events: none;
+}
+
+.demo-msg {
+  max-width: 78%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.demo-msg.user {
+  align-self: flex-end;
+  background: #1a1a1a;
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+.demo-msg.bot {
+  align-self: flex-start;
+  background: #f0f0f0;
+  color: #333;
+  border-bottom-left-radius: 4px;
+}
+
+/* Right sidebar — the star, default expanded */
+.demo-sidebar {
+  width: 220px;
+  background: rgba(255,255,255,0.98);
+  border-left: 1px solid rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 0;
+  box-shadow: -8px 0 32px rgba(0,0,0,0.08);
+  position: relative;
+  z-index: 2;
+}
+
+/* Collapsed: marker lines */
+.demo-sidebar .mark {
+  display: none;
+  width: 14px;
+  height: 3px;
+  border-radius: 2px;
+  background: #cbd5e1;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.demo-sidebar .mark.active {
+  background: #7c3aed;
+  box-shadow: 0 0 6px rgba(124,58,237,0.35);
+}
+
+/* Expanded: header + list */
+.demo-sidebar .sidebar-header {
+  display: block;
+  padding: 14px 16px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  flex-shrink: 0;
+}
+
+.demo-sidebar .item {
+  display: block;
+  padding: 10px 16px;
+  font-size: 12.5px;
+  color: #475569;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-radius: 6px;
+  margin: 0 8px;
+}
+
+.demo-sidebar .item:hover {
+  background: rgba(124,58,237,0.06);
+  color: #1e293b;
+}
+
+.demo-sidebar .item.active {
+  color: #7c3aed;
+  font-weight: 600;
+  background: rgba(124,58,237,0.06);
+}
+
+.demo-sidebar .item.active::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 14px;
+  background: #7c3aed;
+  border-radius: 0 2px 2px 0;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+/* Scrollable list area */
+.demo-sidebar .item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 0;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Stats */
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 48px 24px;
+  background: #fafafa;
+  flex-wrap: wrap;
+}
+
+.stat {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px 32px;
+  text-align: center;
+  min-width: 140px;
+}
+
+.stat .number {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.stat .label {
+  font-size: 13px;
+  color: #888;
+  margin-top: 4px;
+}
+
+/* Features */
+.features-wrap {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 60px 24px 40px;
+}
+
+.features-wrap h2 {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 32px;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.feature {
+  background: #f8f8f8;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.feature .icon {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.feature h3 {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.feature p {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* Platforms */
+.platforms-wrap {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 40px 24px 60px;
+  text-align: center;
+}
+
+.platforms-wrap h2 {
+  font-size: 28px;
+  margin-bottom: 24px;
+}
+
+.platforms {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.platform {
+  background: #f8f8f8;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* Install */
+.install {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 40px 24px 60px;
+  text-align: center;
+}
+
+.install h2 {
+  font-size: 28px;
+  margin-bottom: 24px;
+}
+
+.install-steps {
+  text-align: left;
+  background: #f8f8f8;
+  border-radius: 12px;
+  padding: 28px 32px;
+}
+
+.install-steps ol {
+  padding-left: 20px;
+}
+
+.install-steps li {
+  margin: 10px 0;
+  font-size: 15px;
+  color: #444;
+}
+
+.install-steps code {
+  background: #e8e8e8;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 32px 24px;
+  font-size: 14px;
+  color: #999;
+  border-top: 1px solid #eee;
+}
+
+footer a { color: #666; text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+
+/* Mobile */
+@media (max-width: 600px) {
+  .hero { padding: 60px 20px 40px; }
+  .hero h1 { font-size: 32px; }
+  .hero .tagline { font-size: 17px; }
+  .demo-inner { height: 360px; }
+  .demo-chat { padding: 20px; }
+  .demo-sidebar { width: 180px; }
+  .stats { gap: 10px; }
+  .stat { min-width: 100px; padding: 18px 20px; }
+  .stat .number { font-size: 26px; }
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-icon" aria-hidden="true"><svg width="64" height="64" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="38" stroke="currentColor" stroke-width="3" fill="none"/><path d="M28 44Q50 30 72 44" stroke="currentColor" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M24 54Q50 38 76 54" stroke="currentColor" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M30 64Q50 52 70 64" stroke="currentColor" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg></div>
+  <h1>ChatNest</h1>
+  <p class="tagline">在 AI 对话页面的右侧，为你建立一个快捷导航。无论对话多长，都能一眼找到任意问题，点击瞬间跳转到对应位置。</p>
+  <div class="cta">
+    <a class="cta-primary" href="https://github.com/Nbilitygu/chatnest-extension/releases">下载扩展</a>
+    <a class="cta-secondary" href="https://github.com/Nbilitygu/chatnest-extension">★ Star on GitHub</a>
+  </div>
+</header>
+
+<section class="demo">
+  <div class="demo-inner">
+    <div class="demo-chat">
+      <div class="demo-msg user">帮我写一段 Python 爬虫代码</div>
+      <div class="demo-msg bot">好的，以下是一个简单的 Python 爬虫示例，使用 requests 和 BeautifulSoup...</div>
+      <div class="demo-msg user">再帮我优化一下性能</div>
+      <div class="demo-msg bot">可以通过异步请求和连接池来优化。使用 aiohttp 替代 requests...</div>
+      <div class="demo-msg user">加上异常处理呢</div>
+      <div class="demo-msg bot">可以添加 try/except 捕获网络超时和 HTTP 错误，配合重试机制...</div>
+    </div>
+    <div class="demo-sidebar">
+      <div class="mark active"></div>
+      <div class="mark"></div>
+      <div class="mark"></div>
+      <div class="mark"></div>
+      <div class="sidebar-header">对话导航</div>
+      <div class="item-list">
+        <div class="item active">帮我写一段 Python 爬虫代码</div>
+        <div class="item">再帮我优化一下性能</div>
+        <div class="item">加上异常处理呢</div>
+        <div class="item">用 asyncio 重写</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<p style="text-align:center;margin-top:12px;font-size:13px;color:#888;">安装后，右侧会出现一个细条标记你的每次提问，鼠标移入即可展开浏览完整列表。</p>
+
+<section class="stats">
+  <div class="stat">
+    <div class="number">5+</div>
+    <div class="label">支持平台</div>
+  </div>
+  <div class="stat">
+    <div class="number">~24KB</div>
+    <div class="label">压缩后体积</div>
+  </div>
+  <div class="stat">
+    <div class="number">0</div>
+    <div class="label">第三方依赖</div>
+  </div>
+  <div class="stat">
+    <div class="number">MIT</div>
+    <div class="label">开源协议</div>
+  </div>
+</section>
+
+<section class="features-wrap">
+  <h2>功能特性</h2>
+  <div class="features">
+    <div class="feature">
+      <div class="icon">📍</div>
+      <h3>极简侧边导航</h3>
+      <p>右侧窄条标记所有提问，鼠标移入向左展开完整面板，点击快速定位到对应问题。</p>
+    </div>
+    <div class="feature">
+      <div class="icon">🌓</div>
+      <h3>自动暗色模式</h3>
+      <p>根据页面主题自动切换深浅配色，无缝融入各平台的界面风格。</p>
+    </div>
+    <div class="feature">
+      <div class="icon">⚡</div>
+      <h3>虚拟滚动适配</h3>
+      <p>针对 Kimi、豆包等使用虚拟滚动的平台做了专门优化，点击跳转稳定可靠。</p>
+    </div>
+    <div class="feature">
+      <div class="icon">🔒</div>
+      <h3>Shadow DOM 兼容</h3>
+      <p>支持豆包等使用 Shadow DOM 的平台，穿透 Shadow boundary 查找消息元素。</p>
+    </div>
+    <div class="feature">
+      <div class="icon">🎯</div>
+      <h3>即时定位</h3>
+      <p>无动画延迟，点击后页面瞬间滚动到目标位置，浏览长对话更高效。</p>
+    </div>
+    <div class="feature">
+      <div class="icon">🔌</div>
+      <h3>一键开关</h3>
+      <p>通过扩展弹窗随时开启或关闭导航功能，不影响正常的对话体验。</p>
+    </div>
+  </div>
+</section>
+
+<section class="platforms-wrap">
+  <h2>支持的平台</h2>
+  <div class="platforms">
+    <div class="platform">ChatGPT</div>
+    <div class="platform">Gemini</div>
+    <div class="platform">Kimi</div>
+    <div class="platform">豆包</div>
+    <div class="platform">腾讯元宝</div>
+  </div>
+</section>
+
+<section class="install">
+  <h2>安装方式</h2>
+  <div class="install-steps">
+    <ol>
+      <li>从 <a href="https://github.com/Nbilitygu/chatnest-extension/releases">GitHub Releases</a> 下载最新版本的 <code>chatnest-v*.zip</code></li>
+      <li>解压 zip 文件，得到 <code>dist</code> 文件夹</li>
+      <li>打开 Chrome 扩展管理页 <code>chrome://extensions/</code></li>
+      <li>开启右上角「开发者模式」</li>
+      <li>点击「加载已解压的扩展程序」，选择解压后的 <code>dist</code> 文件夹</li>
+    </ol>
+  </div>
+</section>
+
+<footer>
+  <p>ChatNest 是开源项目，采用 MIT 协议 · <a href="https://github.com/Nbilitygu/chatnest-extension">GitHub</a></p>
+</footer>
+
+</body>
+</html>
