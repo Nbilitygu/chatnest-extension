@@ -590,34 +590,32 @@ footer a:hover { text-decoration: underline; }
 <script>
 (function() {
   var sidebar = document.querySelector('.demo-sidebar');
-  if (!sidebar) return;
+  var demoInner = document.querySelector('.demo-inner');
+  if (!sidebar || !demoInner) return;
 
-  // Step 1: show hint after a short delay so users understand what the thin bar is
+  var expanded = false;
+
+  // Step 1: show hint after page settles so users see the collapsed state first
   setTimeout(function() {
-    sidebar.classList.add('hint-visible');
-  }, 600);
+    if (!expanded) sidebar.classList.add('hint-visible');
+  }, 500);
 
-  // Step 2: only expand after user has scrolled (prevents flash on initial load)
-  var hasScrolled = false;
-  window.addEventListener('scroll', function onScroll() {
-    hasScrolled = true;
-    window.removeEventListener('scroll', onScroll);
-  }, { once: true });
-
-  var observer = new IntersectionObserver(function(entries) {
-    entries.forEach(function(entry) {
-      if (entry.isIntersecting && hasScrolled) {
-        // Hide hint first, then expand gracefully
-        sidebar.classList.remove('hint-visible');
-        setTimeout(function() {
-          sidebar.classList.add('demo-expanded');
-        }, 250);
-        observer.disconnect();
-      }
-    });
-  }, { threshold: 0.3 });
-
-  observer.observe(document.querySelector('.demo-inner'));
+  // Step 2: after user has had time to see the collapsed state, expand gracefully
+  setTimeout(function() {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting && !expanded) {
+          expanded = true;
+          sidebar.classList.remove('hint-visible');
+          setTimeout(function() {
+            sidebar.classList.add('demo-expanded');
+          }, 200);
+          observer.disconnect();
+        }
+      });
+    }, { threshold: 0.15 });
+    observer.observe(demoInner);
+  }, 1600);
 })();
 </script>
 
